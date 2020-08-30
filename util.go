@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -49,4 +51,25 @@ func String(r Renderable) string {
 	}
 
 	return sb.String()
+}
+
+// Render invokes a local plantuml command. fileType can be svg, or png etc.
+func RenderLocal(fileType string, renderable Renderable) ([]byte, error) {
+	cmd := exec.Command("plantuml", "-t"+fileType, "-p")
+	cmd.Env = os.Environ()
+
+	w, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := w.Write([]byte(String(renderable))); err != nil {
+		return nil, err
+	}
+
+	if err := w.Close(); err != nil {
+		return nil, err
+	}
+
+	return cmd.Output()
 }
