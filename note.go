@@ -2,12 +2,9 @@ package plantuml
 
 import (
 	"io"
-	"strconv"
-	"sync"
 )
 
-var noteNum int
-var mutex sync.Mutex
+
 
 type Note struct {
 	id   string
@@ -15,11 +12,9 @@ type Note struct {
 }
 
 func NewNote(text string) *Note {
-	mutex.Lock()
-	defer mutex.Unlock()
-	noteNum++
 
-	return &Note{text: text, id: "N" + strconv.Itoa(noteNum)}
+
+	return &Note{text: text, id: "N" + nextId()}
 }
 
 func (p *Note) Render(wr io.Writer) error {

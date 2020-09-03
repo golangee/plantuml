@@ -6,8 +6,25 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
+	"sync"
 )
+
+var idNum int
+var mutex sync.Mutex
+
+type WithId interface {
+	Id() string
+}
+
+func nextId() string {
+	mutex.Lock()
+	defer mutex.Unlock()
+	idNum++
+
+	return strconv.Itoa(idNum)
+}
 
 type strWriter struct {
 	Writer io.Writer
